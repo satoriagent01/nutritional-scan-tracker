@@ -1,9 +1,9 @@
 /**
  * Custom Metrics Module - Manages user-defined dietary markers.
- * Uses localStorage for persistence.
+ * Uses storage.js for persistence.
  */
 
-const STORAGE_KEY = 'nutritional-scan-custom-metrics';
+import { saveMetrics, loadMetrics } from './storage.js';
 
 /**
  * Adds a new custom metric to the user's profile.
@@ -33,12 +33,7 @@ export function addCustomMetric(name, unit) {
  * @returns {Array<{name: string, unit: string}>}
  */
 export function getCustomMetrics() {
-  try {
-    const data = localStorage.getItem(STORAGE_KEY);
-    return data ? JSON.parse(data) : [];
-  } catch {
-    return [];
-  }
+  return loadMetrics();
 }
 
 /**
@@ -53,12 +48,4 @@ export function removeCustomMetric(name) {
   const metrics = getCustomMetrics();
   const filtered = metrics.filter(m => m.name !== name);
   saveMetrics(filtered);
-}
-
-/**
- * Saves custom metrics to localStorage.
- * @param {Array<{name: string, unit: string}>} metrics
- */
-function saveMetrics(metrics) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(metrics));
 }
