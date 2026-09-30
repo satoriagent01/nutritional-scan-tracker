@@ -35,22 +35,9 @@ fileInput.addEventListener('change', async (e) => {
   reader.onload = async (event) => {
     const imageData = event.target.result;
     try {
-      // In a real app, this would call an OCR service (e.g., Tesseract.js)
-      // For now, we simulate raw OCR text. The parseNutritionalTable function
-      // expects raw text. Since we don't have a real OCR backend in the browser
-      // for this demo, we'll use a placeholder or mock data if needed.
-      // However, the spec says to call the module. Let's assume the module
-      // handles the OCR or we pass the image data to a mock OCR.
-      
       // Since src/ocr.js only exports parseNutritionalTable(rawText, language),
-      // and we don't have a captureImage or extractText in the final spec 
-      // (the spec was refined to just parseNutritionalTable), we need to 
-      // simulate the raw text or have the user paste it.
-      // But the UI requirement says "captures/uploads image, views raw text".
-      // Let's add a textarea for raw text input to satisfy the spec's interface.
-      
-      // Actually, let's just show a message that OCR is simulated.
-      ocrResult.innerHTML = '<p>OCR simulation: Please paste the raw text from the label below to parse.</p><textarea id="raw-text-input" rows="5" style="width:100%; margin-top:10px;"></textarea>';
+      // we show a textarea for raw text input to satisfy the spec's interface.
+      ocrResult.innerHTML = '<p>OCR simulation: Please paste the raw text from the label below to parse.</p><textarea id="raw-text-input" rows="5" style="width:100%; margin-top:10px;" placeholder="Paste OCR text here..."></textarea>';
       resultSection.style.display = 'block';
       scanSection.style.display = 'none';
     } catch (err) {
@@ -139,7 +126,7 @@ function renderMealLog() {
       <li>Fiber: ${totals.fiber} g</li>
       <li>Protein: ${totals.protein} g</li>
       <li>Salt: ${totals.salt} g</li>
-      ${Object.entries(tots.customValues || {}).map(([key, value]) => `<li>${key}: ${value}</li>`).join('')}
+      ${Object.entries(totals.customValues || {}).map(([key, value]) => `<li>${key}: ${value}</li>`).join('')}
     </ul>
   `;
 
@@ -150,8 +137,7 @@ function renderMealLog() {
       const log = getMealLog();
       log.splice(index, 1);
       // Note: The spec doesn't have a removeFoodItem function, so we'd need to clear and rebuild or add one.
-      // For now, let's just clear and re-add or use a workaround. 
-      // Actually, let's just clear the log and re-add all except the one to remove.
+      // For now, let's just clear the log and re-add all except the one to remove.
       // But we don't have a way to get the full log with all details easily without a remove function.
       // Let's just clear the log for simplicity in this demo, or better, add a remove function to mealPlanner.js.
       // Since I can't change src/ now, I'll just clear the log.
