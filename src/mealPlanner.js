@@ -1,9 +1,9 @@
 /**
  * Meal Planner Module - Handles adding food items and calculating totals.
- * Uses localStorage for persistence.
+ * Uses storage.js for persistence.
  */
 
-const STORAGE_KEY = 'nutritional-scan-meal-log';
+import { saveMealLog, loadMealLog } from './storage.js';
 
 /**
  * Adds a food item to the current meal log.
@@ -54,12 +54,7 @@ export function addFoodItem(name, portionGrams, nutritionalData, customValues) {
  * @returns {Array<Object>}
  */
 export function getMealLog() {
-  try {
-    const data = localStorage.getItem(STORAGE_KEY);
-    return data ? JSON.parse(data) : [];
-  } catch {
-    return [];
-  }
+  return loadMealLog();
 }
 
 /**
@@ -127,14 +122,6 @@ export function calculateTotals(mealLog) {
  */
 export function clearMealLog() {
   saveMealLog([]);
-}
-
-/**
- * Saves meal log to localStorage.
- * @param {Array<Object>} log
- */
-function saveMealLog(log) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(log));
 }
 
 /**
