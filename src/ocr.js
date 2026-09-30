@@ -46,19 +46,19 @@ export function parseNutritionalTable(rawText, language) {
     en: {
       energy: /energy\s*(\d+(?:[.,]\d+)?)\s*kJ\s*(?:\/|\s*\/\s*)\s*(\d+(?:[.,]\d+)?)\s*kcal/i,
       fat: /fat\s*(\d+(?:[.,]\d+)?)\s*g/i,
-      saturates: /of\s*which\s*saturates?\s*(\d+(?:[.,]\d+)?)\s*g/i,
+      saturates: /(?:of\s+which\s+)?saturates?\s*(\d+(?:[.,]\d+)?)\s*g/i,
       carbohydrates: /carbohydrates?\s*(\d+(?:[.,]\d+)?)\s*g/i,
-      sugars: /of\s*which\s*sugars?\s*(\d+(?:[.,]\d+)?)\s*g/i,
-      fiber: /fiber|fibre\s*(\d+(?:[.,]\d+)?)\s*g/i,
+      sugars: /(?:of\s+which\s+)?sugars?\s*(\d+(?:[.,]\d+)?)\s*g/i,
+      fiber: /(?:of\s+which\s+)?fiber|fibre\s*(\d+(?:[.,]\d+)?)\s*g/i,
       protein: /protein\s*(\d+(?:[.,]\d+)?)\s*g/i,
       salt: /salt\s*(\d+(?:[.,]\d+)?)\s*g/i,
     },
     fr: {
-      energy: /énergie?\s*(\d+(?:[.,]\d+)?)\s*kJ\s*(?:\/|\s*\/\s*)\s*(\d+(?:[.,]\d+)?)\s*kcal/i,
-      fat: /matières?\s*grasses?|lipides?\s*(\d+(?:[.,]\d+)?)\s*g/i,
-      saturates: /acides?\s*gras?\s*saturés?\s*(\d+(?:[.,]\d+)?)\s*g/i,
+      energy: /énergie\s*(\d+(?:[.,]\d+)?)\s*kJ\s*(?:\/|\s*\/\s*)\s*(\d+(?:[.,]\d+)?)\s*kcal/i,
+      fat: /matières\s+grasses?\s*(\d+(?:[.,]\d+)?)\s*g/i,
+      saturates: /dont\s+acides\s+gras\s+saturés?\s*(\d+(?:[.,]\d+)?)\s*g/i,
       carbohydrates: /glucides?\s*(\d+(?:[.,]\d+)?)\s*g/i,
-      sugars: /dont\s*sucres?\s*(\d+(?:[.,]\d+)?)\s*g/i,
+      sugars: /dont\s+sucres?\s*(\d+(?:[.,]\d+)?)\s*g/i,
       fiber: /fibres?\s*(\d+(?:[.,]\d+)?)\s*g/i,
       protein: /protéines?\s*(\d+(?:[.,]\d+)?)\s*g/i,
       salt: /sel\s*(\d+(?:[.,]\d+)?)\s*g/i,
@@ -66,25 +66,21 @@ export function parseNutritionalTable(rawText, language) {
     it: {
       energy: /energia\s*(\d+(?:[.,]\d+)?)\s*kJ\s*(?:\/|\s*\/\s*)\s*(\d+(?:[.,]\d+)?)\s*kcal/i,
       fat: /grassi?\s*(\d+(?:[.,]\d+)?)\s*g/i,
-      saturates: /di\s*cui\s*acidi?\s*grassi?\s*saturi?\s*(\d+(?:[.,]\d+)?)\s*g/i,
+      saturates: /di\s+cui\s+acidi\s+grassi\s+saturi?\s*(\d+(?:[.,]\d+)?)\s*g/i,
       carbohydrates: /carboidrati?\s*(\d+(?:[.,]\d+)?)\s*g/i,
-      sugars: /di\s*cui\s*zuccheri?\s*(\d+(?:[.,]\d+)?)\s*g/i,
+      sugars: /di\s+cui\s+zuccheri?\s*(\d+(?:[.,]\d+)?)\s*g/i,
       fiber: /fibre?\s*(\d+(?:[.,]\d+)?)\s*g/i,
       protein: /proteine?\s*(\d+(?:[.,]\d+)?)\s*g/i,
       salt: /sale\s*(\d+(?:[.,]\d+)?)\s*g/i,
     },
   };
 
-  // Get patterns for the given language, fallback to English
   const patterns = labelPatterns[language] || labelPatterns['en'];
 
-  // Helper to extract a numeric value from a line using a regex
-  function extractValue(line, regex) {
+  // Helper to extract value from a line using a regex
+  function extractValue(regex, line) {
     const match = line.match(regex);
-    if (match) {
-      return parseFloat(match[1].replace(',', '.'));
-    }
-    return null;
+    return match ? parseFloat(match[1].replace(',', '.')) : null;
   }
 
   let energyKj = null;
@@ -100,7 +96,7 @@ export function parseNutritionalTable(rawText, language) {
   let servingUnit = 'g';
 
   for (const line of lines) {
-    // Energy line: "Energie 2292 kJ / 549 kcal"
+    // Energy line
     if (energyKj === null && energyKcal === null) {
       const energyMatch = line.match(patterns.energy);
       if (energyMatch) {
@@ -110,72 +106,40 @@ export function parseNutritionalTable(rawText, language) {
       }
     }
 
-    // Fat
-    if (fat === null) {
-      fat = extractValue(line, patterns.fat);
-    }
+    // Other nutrients
+    if (fat === null) fat = extractValue(patterns.fat, line);
+    if (saturates === null) saturates = extractValue(patterns.saturates, line);
+    if (carbohydrates === null) carbohydrates = extractValue(patterns.carbohydrates, line);
+    if (sugars === null) sugars = extractValue(patterns.sugars, line);
+    if (fiber === null) fiber = extractValue(patterns.fiber, line);
+    if (protein === null) protein = extractValue(patterns.protein, line);
+    if (salt === null) salt = extractValue(patterns.salt, line);
 
-    // Saturates
-    if (saturates === null) {
-      saturates = extractValue(line, patterns.saturates);
-    }
-
-    // Carbohydrates
-    if (carbohydrates === null) {
-      carbohydrates = extractValue(line, patterns.carbohydrates);
-    }
-
-    // Sugars
-    if (sugars === null) {
-      sugars = extractValue(line, patterns.sugars);
-    }
-
-    // Fiber
-    if (fiber === null) {
-      fiber = extractValue(line, patterns.fiber);
-    }
-
-    // Protein
-    if (protein === null) {
-      protein = extractValue(line, patterns.protein);
-    }
-
-    // Salt
-    if (salt === null) {
-      salt = extractValue(line, patterns.salt);
-    }
-
-    // Serving Size
-    if (servingSize === null) {
-      const servingMatch = line.match(/serving\s*size[:\s]*\s*(\d+(?:[.,]\d+)?)\s*(ml|g)/i);
-      if (servingMatch) {
-        servingSize = parseFloat(servingMatch[1].replace(',', '.'));
-        servingUnit = servingMatch[2].toLowerCase();
-      }
+    // Serving size
+    const servingMatch = line.match(/serving\s*size\s*[:\-]?\s*(\d+(?:[.,]\d+)?)\s*(ml|g)/i);
+    if (servingMatch) {
+      servingSize = parseFloat(servingMatch[1].replace(',', '.'));
+      servingUnit = servingMatch[2];
     }
   }
 
-  // Validate that we found at least some nutritional data
-  const hasEnergy = energyKj !== null || energyKcal !== null;
-  const hasFat = fat !== null;
-  const hasCarbs = carbohydrates !== null;
-  const hasProtein = protein !== null;
-
-  if (!hasEnergy && !hasFat && !hasCarbs && !hasProtein) {
-    throw new Error('Invalid input: no nutritional data found in text');
+  // Validate that we got at least some nutritional data
+  const hasNutritionalData = [energyKj, energyKcal, fat, saturates, carbohydrates, sugars, fiber, protein, salt].some(v => v !== null);
+  if (!hasNutritionalData) {
+    throw new Error('Invalid input: no nutritional data found');
   }
 
   return {
-    energyKj: energyKj ?? 0,
-    energyKcal: energyKcal ?? 0,
-    fat: fat ?? 0,
-    saturates: saturates ?? 0,
-    carbohydrates: carbohydrates ?? 0,
-    sugars: sugars ?? 0,
-    fiber: fiber ?? 0,
-    protein: protein ?? 0,
-    salt: salt ?? 0,
-    servingSize: servingSize ?? 100,
-    servingUnit: servingUnit,
+    energyKj: energyKj || 0,
+    energyKcal: energyKcal || 0,
+    fat: fat || 0,
+    saturates: saturates || 0,
+    carbohydrates: carbohydrates || 0,
+    sugars: sugars || 0,
+    fiber: fiber || 0,
+    protein: protein || 0,
+    salt: salt || 0,
+    servingSize: servingSize || 0,
+    servingUnit,
   };
 }
