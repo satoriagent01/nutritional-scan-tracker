@@ -1,98 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nutritional Scan Tracker</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nutritional Scan Tracker</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
-        <h1>Nutritional Scan Tracker</h1>
-        <nav>
-            <button id="nav-scan" class="active">Scan</button>
-            <button id="nav-meal">Meal Planner</button>
-            <button id="nav-metrics">Custom Metrics</button>
-            <button id="nav-settings">Settings</button>
-        </nav>
-    </header>
+  <header>
+    <h1>🍎 Nutritional Scan Tracker</h1>
+    <nav>
+      <button class="tab-btn active" data-tab="scan">Scan</button>
+      <button class="tab-btn" data-tab="planner">Meal Planner</button>
+      <button class="tab-btn" data-tab="metrics">Custom Metrics</button>
+      <button class="tab-btn" data-tab="log">Log</button>
+      <button class="tab-btn" data-tab="settings">Settings</button>
+    </nav>
+  </header>
 
-    <main>
-        <!-- Scan Screen -->
-        <section id="screen-scan" class="screen active">
-            <h2>Scan Label</h2>
-            <div class="scan-area">
-                <input type="file" id="file-input" accept="image/*">
-                <button id="btn-capture">Capture Photo</button>
-                <button id="btn-upload">Upload Image</button>
-            </div>
-            <div id="scan-preview" class="preview-container hidden">
-                <img id="preview-img" src="" alt="Scanned label preview">
-            </div>
-            <div id="scan-results" class="results-container hidden">
-                <h3>Detected Nutrition</h3>
-                <div id="nutrition-data"></div>
-                <button id="btn-save-scan">Save to Meal Planner</button>
-            </div>
-            <div id="scan-error" class="error-message hidden"></div>
-        </section>
+  <main>
+    <!-- Scan Screen -->
+    <section id="scan" class="tab-content active">
+      <h2>Scan Label</h2>
+      <div class="scan-area">
+        <input type="file" id="imageInput" accept="image/*">
+        <button id="captureBtn">Take Photo</button>
+        <button id="uploadBtn">Upload Image</button>
+      </div>
+      <div id="scanPreview" class="preview-container hidden">
+        <img id="previewImg" src="" alt="Preview">
+      </div>
+      <div id="ocrResult" class="result-container hidden">
+        <h3>Raw OCR Text</h3>
+        <pre id="rawText"></pre>
+        <h3>Parsed Nutritional Data</h3>
+        <div id="parsedData"></div>
+        <button id="addToPlannerBtn">Add to Meal Planner</button>
+      </div>
+      <div id="scanHistory" class="history-container">
+        <h3>Scan History</h3>
+        <div id="historyList"></div>
+      </div>
+    </section>
 
-        <!-- Meal Planner Screen -->
-        <section id="screen-meal" class="screen">
-            <h2>Meal Planner</h2>
-            <div class="add-food-form">
-                <input type="text" id="food-name" placeholder="Food name">
-                <input type="number" id="food-portion" placeholder="Portion (g/ml)" min="0">
-                <select id="food-unit">
-                    <option value="g">Grams</option>
-                    <option value="ml">Milliliters</option>
-                </select>
-                <button id="btn-add-food">Add Food</button>
-            </div>
-            <div id="meal-log" class="meal-log">
-                <h3>Today's Log</h3>
-                <ul id="log-list"></ul>
-                <div id="meal-totals" class="meal-totals">
-                    <h4>Daily Totals</h4>
-                    <div id="totals-data"></div>
-                </div>
-                <button id="btn-clear-log">Clear Log</button>
-            </div>
-        </section>
+    <!-- Meal Planner Screen -->
+    <section id="planner" class="tab-content">
+      <h2>Meal Planner</h2>
+      <div class="add-item-form">
+        <input type="text" id="foodName" placeholder="Food name">
+        <input type="number" id="portionSize" placeholder="Portion (g/ml)" min="1">
+        <button id="addFoodBtn">Add Item</button>
+      </div>
+      <div id="dailyTotals" class="totals-container">
+        <h3>Daily Totals</h3>
+        <div id="totalsData"></div>
+      </div>
+      <div id="mealLog" class="log-container">
+        <h3>Meal Log</h3>
+        <div id="logList"></div>
+        <button id="clearLogBtn">Clear Log</button>
+      </div>
+    </section>
 
-        <!-- Custom Metrics Screen -->
-        <section id="screen-metrics" class="screen">
-            <h2>Custom Metrics</h2>
-            <div class="add-metric-form">
-                <input type="text" id="metric-name" placeholder="Metric name (e.g., Sodium)">
-                <input type="text" id="metric-unit" placeholder="Unit (e.g., mg)">
-                <button id="btn-add-metric">Add Metric</button>
-            </div>
-            <div id="metrics-list" class="metrics-list">
-                <h3>Your Metrics</h3>
-                <ul id="custom-metrics-ul"></ul>
-            </div>
-        </section>
+    <!-- Custom Metrics Screen -->
+    <section id="metrics" class="tab-content">
+      <h2>Custom Metrics</h2>
+      <div class="add-metric-form">
+        <input type="text" id="metricName" placeholder="Metric name (e.g. Sodium)">
+        <input type="text" id="metricUnit" placeholder="Unit (e.g. mg)">
+        <button id="addMetricBtn">Add Metric</button>
+      </div>
+      <div id="metricsList" class="metrics-container">
+        <h3>Your Metrics</h3>
+        <ul id="metricsUl"></ul>
+      </div>
+    </section>
 
-        <!-- Settings Screen -->
-        <section id="screen-settings" class="screen">
-            <h2>Settings</h2>
-            <div class="settings-form">
-                <label for="ocr-endpoint">OCR Endpoint URL:</label>
-                <input type="url" id="ocr-endpoint" placeholder="https://api.example.com/ocr">
-                
-                <label for="ocr-key">API Key:</label>
-                <input type="password" id="ocr-key" placeholder="Your API key">
-                
-                <label for="ocr-model">Model:</label>
-                <input type="text" id="ocr-model" placeholder="e.g., tesseract, gpt-4o">
-                
-                <button id="btn-save-settings">Save Settings</button>
-            </div>
-            <div id="settings-status" class="status-message hidden"></div>
-        </section>
-    </main>
+    <!-- Log Screen -->
+    <section id="log" class="tab-content">
+      <h2>Meal Log</h2>
+      <div id="fullLog" class="full-log-container">
+        <div id="fullLogList"></div>
+        <div id="fullLogTotals" class="totals-container"></div>
+        <button id="clearFullLogBtn">Clear All</button>
+      </div>
+    </section>
 
-    <script type="module" src="app.js"></script>
+    <!-- Settings Screen -->
+    <section id="settings" class="tab-content">
+      <h2>Settings</h2>
+      <div class="settings-form">
+        <label for="ocrEndpoint">OCR Endpoint URL</label>
+        <input type="url" id="ocrEndpoint" placeholder="https://api.openai.com/v1">
+        
+        <label for="apiKey">API Key</label>
+        <input type="password" id="apiKey" placeholder="sk-...">
+        
+        <label for="model">Model</label>
+        <input type="text" id="model" placeholder="gpt-4-vision-preview">
+        
+        <label for="language">Default Language</label>
+        <select id="language">
+          <option value="de">German</option>
+          <option value="nl">Dutch</option>
+          <option value="en">English</option>
+          <option value="fr">French</option>
+          <option value="it">Italian</option>
+        </select>
+        
+        <button id="saveSettingsBtn">Save Settings</button>
+        <button id="resetSettingsBtn">Reset Settings</button>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="app.js"></script>
 </body>
 </html>
