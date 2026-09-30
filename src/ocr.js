@@ -22,7 +22,7 @@ export function parseNutritionalTable(rawText, language = 'en') {
   const tableIndicators = [
     'nährwert', 'nutrition', 'nutritional', 'voedingswaarde', 'valeur',
     'valore', 'energie', 'fett', 'vet', 'matières grasses', 'grassi',
-    'kohlenhydrat', 'koolhydraat', 'glucides', 'zucker', 'suiker',
+    'kohlenhydrat', 'koolhydrat', 'glucides', 'zucker', 'suiker',
     'eiweiß', 'eiwit', 'protéine', 'protéines', 'salz', 'zout', 'sel',
     'ballaststoff', 'vezel', 'fibre', 'fett', 'vet', 'saturates',
     'gesättigte', 'verzadigde', 'acides gras saturés', 'grassi saturi'
@@ -32,7 +32,7 @@ export function parseNutritionalTable(rawText, language = 'en') {
   const hasIndicator = tableIndicators.some(indicator => lowerText.includes(indicator));
 
   if (!hasIndicator) {
-    throw new Error('No nutritional table found in the provided text');
+    throw new Error('Invalid input: no nutritional table found in the provided text');
   }
 
   // Parse the nutritional table
@@ -101,7 +101,7 @@ export function parseNutritionalTable(rawText, language = 'en') {
                   result.carbohydrates > 0 || result.protein > 0;
 
   if (!hasData) {
-    throw new Error('No nutritional data could be extracted from the provided text');
+    throw new Error('Invalid input: no nutritional data could be extracted from the provided text');
   }
 
   return result;
@@ -111,7 +111,6 @@ export function parseNutritionalTable(rawText, language = 'en') {
  * Check if a line contains a numeric value (with optional decimal and unit)
  */
 function hasNumericValue(line) {
-  // Match patterns like "2292 kJ", "549 kcal", "33 g", "0,18 g", "3,9 g"
   return /\d[\d,]*\s*(?:kJ|kcal|g|ml|%)/i.test(line);
 }
 
@@ -129,14 +128,12 @@ function isTableHeader(line) {
  * Parse serving size from the text
  */
 function parseServingSize(text) {
-  // Look for serving size indicators
   const servingPatterns = [
     /(?:portion|servings?|serving|porzione|portata|1\s*melto|1\s*glas|1\s*glass)\s*(?:size|größen?|größe)?\s*[:\-]?\s*(\d[\d,]*)\s*(g|ml)/i,
     /(\d[\d,]*)\s*(?:per\s*)?(?:100\s*)?(g|ml)\s*(?:per\s*)?portion/i,
     /(?:pro|per)\s*(\d[\d,]*)\s*(g|ml)/i,
     /(\d[\d,]*)\s*(?:per\s*)?(?:100\s*)?(g|ml)/i,
-    /(?:portion|servings?|serving|porzione|portata)\s*[:\-]?\s*(\d[\d,]*)\s*(g|ml)/i,
-    /(\d[\d,]*)\s*(?:per\s*)?(?:100\s*)?(g|ml)/i
+    /(?:portion|servings?|serving|porzione|portata)\s*[:\-]?\s*(\d[\d,]*)\s*(g|ml)/i
   ];
 
   for (const pattern of servingPatterns) {
@@ -183,7 +180,6 @@ function parseLine(line, result) {
  * Extract numeric values from a line (handles both . and , as decimal separators)
  */
 function extractNumericValues(line) {
-  // Match numbers with optional decimal (using . or ,) followed by optional unit
   const matches = line.matchAll(/(\d[\d,]*)\s*(?:kJ|kcal|g|ml|%|\/)/gi);
   const values = [];
   for (const match of matches) {
@@ -205,7 +201,6 @@ function identifyComponent(lowerLine) {
     return 'energy';
   }
   if (lowerLine.includes('fett') || lowerLine.includes('vet') || lowerLine.includes('matières grasses') || lowerLine.includes('grassi')) {
-    // Check if it's "davon gesättigte" / "of which saturates"
     if (lowerLine.includes('davon gesättigte') || lowerLine.includes('saturates') ||
         lowerLine.includes('verzadigde') || lowerLine.includes('acides gras saturés') ||
         lowerLine.includes('grassi saturi') || lowerLine.includes('of which saturates')) {
@@ -213,10 +208,9 @@ function identifyComponent(lowerLine) {
     }
     return 'fat';
   }
-  if (lowerLine.includes('kohlenhydrat') || lowerLine.includes('koolhydraat') ||
+  if (lowerLine.includes('kohlenhydrat') || lowerLine.includes('koolhydrat') ||
       lowerLine.includes('glucides') || lowerLine.includes('carbohydrat') ||
       lowerLine.includes('carboidrati')) {
-    // Check if it's "davon Zucker" / "of which sugars"
     if (lowerLine.includes('davon zucker') || lowerLine.includes('of which sugars') ||
         lowerLine.includes('waarvan suikers') || lowerLine.includes('dont sucres') ||
         lowerLine.includes('di cui zuccheri')) {
@@ -227,10 +221,10 @@ function identifyComponent(lowerLine) {
   if (lowerLine.includes('zucker') || lowerLine.includes('suiker') || lowerLine.includes('sucres') || lowerLine.includes('zuccheri')) {
     return 'sugars';
   }
-  if (lowerLine.includes('ballaststoff') || lowerLine.includes('vezel') || lowerLine.includes('fibre') || lowerLine.includes('fibre')) {
+  if (lowerLine.includes('ballaststoff') || lowerLine.includes('vezel') || lowerLine.includes('fibre')) {
     return 'fiber';
   }
-  if (lowerLine.includes('eiweiß') || lowerLine.includes('eiwit') || lowerLine.includes('protéine') || lowerLine.includes('proteine') || lowerLine.includes('proteine') || lowerLine.includes('proteina')) {
+  if (lowerLine.includes('eiweiß') || lowerLine.includes('eiwit') || lowerLine.includes('protéine') || lowerLine.includes('proteine') || lowerLine.includes('proteina')) {
     return 'protein';
   }
   if (lowerLine.includes('salz') || lowerLine.includes('zout') || lowerLine.includes('sel')) {
@@ -246,12 +240,10 @@ function identifyComponent(lowerLine) {
 function assignValue(component, values, result) {
   switch (component) {
     case 'energy':
-      // Energy lines typically have two values: kJ and kcal
       if (values.length >= 2) {
         result.energyKj = values[0];
         result.energyKcal = values[1];
       } else if (values.length === 1) {
-        // Try to determine if it's kJ or kcal from context
         if (values[0] > 1000) {
           result.energyKj = values[0];
         } else {
