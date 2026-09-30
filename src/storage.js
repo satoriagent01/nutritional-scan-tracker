@@ -1,43 +1,19 @@
 /**
  * Storage Module - Handles persistence using localStorage.
- * Provides generic save/load functions for different data types.
  */
 
 const STORAGE_KEYS = {
-  scans: 'nutritional-scan-scans',
-  metrics: 'nutritional-scan-custom-metrics',
-  mealLog: 'nutritional-scan-meal-log',
+  SCANS: 'nutritional_scans',
+  METRICS: 'nutritional_metrics',
+  MEAL_LOG: 'nutritional_meal_log',
 };
-
-/**
- * Saves data to localStorage.
- * @param {string} key - The storage key.
- * @param {*} data - The data to save.
- */
-export function saveData(key, data) {
-  localStorage.setItem(key, JSON.stringify(data));
-}
-
-/**
- * Loads data from localStorage.
- * @param {string} key - The storage key.
- * @returns {*} The loaded data, or null if not found.
- */
-export function loadData(key) {
-  try {
-    const data = localStorage.getItem(key);
-    return data ? JSON.parse(data) : null;
-  } catch {
-    return null;
-  }
-}
 
 /**
  * Saves array of scan objects.
  * @param {Array} scans
  */
 export function saveScans(scans) {
-  saveData(STORAGE_KEYS.scans, scans);
+  localStorage.setItem(STORAGE_KEYS.SCANS, JSON.stringify(scans));
 }
 
 /**
@@ -45,7 +21,8 @@ export function saveScans(scans) {
  * @returns {Array}
  */
 export function loadScans() {
-  return loadData(STORAGE_KEYS.scans) || [];
+  const data = localStorage.getItem(STORAGE_KEYS.SCANS);
+  return data ? JSON.parse(data) : [];
 }
 
 /**
@@ -53,7 +30,7 @@ export function loadScans() {
  * @param {Array} metrics
  */
 export function saveMetrics(metrics) {
-  saveData(STORAGE_KEYS.metrics, metrics);
+  localStorage.setItem(STORAGE_KEYS.METRICS, JSON.stringify(metrics));
 }
 
 /**
@@ -61,7 +38,8 @@ export function saveMetrics(metrics) {
  * @returns {Array}
  */
 export function loadMetrics() {
-  return loadData(STORAGE_KEYS.metrics) || [];
+  const data = localStorage.getItem(STORAGE_KEYS.METRICS);
+  return data ? JSON.parse(data) : [];
 }
 
 /**
@@ -69,7 +47,7 @@ export function loadMetrics() {
  * @param {Array} log
  */
 export function saveMealLog(log) {
-  saveData(STORAGE_KEYS.mealLog, log);
+  localStorage.setItem(STORAGE_KEYS.MEAL_LOG, JSON.stringify(log));
 }
 
 /**
@@ -77,5 +55,6 @@ export function saveMealLog(log) {
  * @returns {Array}
  */
 export function loadMealLog() {
-  return loadData(STORAGE_KEYS.mealLog) || [];
+  const data = localStorage.getItem(STORAGE_KEYS.MEAL_LOG);
+  return data ? JSON.parse(data) : [];
 }
