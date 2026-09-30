@@ -5,6 +5,17 @@
 
 import { saveMealLog, loadMealLog } from './storage.js';
 
+let idCounter = 0;
+
+/**
+ * Generates a unique ID.
+ * @returns {string}
+ */
+function generateId() {
+  idCounter += 1;
+  return `item-${Date.now()}-${idCounter}`;
+}
+
 /**
  * Adds a food item to the current meal log.
  * @param {string} name - Name of the food item.
@@ -105,11 +116,8 @@ export function calculateTotals(mealLog) {
 
     // Add custom values
     if (item.customValues) {
-      for (const key of Object.keys(item.customValues)) {
-        if (totals[key] === undefined) {
-          totals[key] = 0;
-        }
-        totals[key] += item.customValues[key] || 0;
+      for (const name of customMetricNames) {
+        totals[name] += (item.customValues[name] || 0);
       }
     }
   }
@@ -122,12 +130,4 @@ export function calculateTotals(mealLog) {
  */
 export function clearMealLog() {
   saveMealLog([]);
-}
-
-/**
- * Generates a unique ID for food items.
- * @returns {string}
- */
-function generateId() {
-  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 }
