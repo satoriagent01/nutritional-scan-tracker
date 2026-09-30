@@ -76,12 +76,6 @@ export function parseNutritionalTable(rawText, language = 'en') {
 
     if (inTable) {
       tableLines.push(trimmed);
-
-      // Check if we've left the table (no more numeric values in expected format)
-      if (trimmed.length > 0 && !hasNumericValue(trimmed) && !isTableHeader(trimmed)) {
-        // Could still be part of the table, check next lines
-        // We'll process what we have
-      }
     }
   }
 
@@ -137,7 +131,7 @@ function isTableHeader(line) {
 function parseServingSize(text) {
   // Look for serving size indicators
   const servingPatterns = [
-    /(?:portion|servings?|serving|porzione|portata|portion|1\s*melto|1\s*glas|1\s*glass)\s*(?:size|größen?|größe)?\s*[:\-]?\s*(\d[\d,]*)\s*(g|ml)/i,
+    /(?:portion|servings?|serving|porzione|portata|1\s*melto|1\s*glas|1\s*glass)\s*(?:size|größen?|größe)?\s*[:\-]?\s*(\d[\d,]*)\s*(g|ml)/i,
     /(\d[\d,]*)\s*(?:per\s*)?(?:100\s*)?(g|ml)\s*(?:per\s*)?portion/i,
     /(?:pro|per)\s*(\d[\d,]*)\s*(g|ml)/i,
     /(\d[\d,]*)\s*(?:per\s*)?(?:100\s*)?(g|ml)/i,
