@@ -1,0 +1,514 @@
+/* Nutritional Scan Tracker - Styles */
+
+:root {
+  --primary: #2e7d32;
+  --primary-light: #4caf50;
+  --primary-dark: #1b5e20;
+  --bg: #f5f5f5;
+  --card-bg: #ffffff;
+  --text: #212121;
+  --text-secondary: #757575;
+  --border: #e0e0e0;
+  --danger: #d32f2f;
+  --warning: #f57c00;
+  --info: #0288d1;
+  --radius: 8px;
+  --shadow: 0 2px 4px rgba(0,0,0,0.1);
+  --shadow-lg: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+.app-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+/* Header */
+.app-header {
+  background: var(--primary);
+  color: white;
+  padding: 20px 16px;
+  text-align: center;
+  margin: -16px -16px 20px -16px;
+  border-radius: 0 0 var(--radius) var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.app-header h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.app-header p {
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+
+/* Navigation Tabs */
+.nav-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 4px;
+  box-shadow: var(--shadow);
+}
+
+.nav-tab {
+  flex: 1;
+  padding: 10px 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.nav-tab:hover {
+  background: var(--bg);
+}
+
+.nav-tab.active {
+  background: var(--primary);
+  color: white;
+}
+
+/* Sections */
+.section {
+  display: none;
+}
+
+.section.active {
+  display: block;
+}
+
+/* Cards */
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+}
+
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--primary-dark);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-title .icon {
+  font-size: 1.2rem;
+}
+
+/* Form Elements */
+.form-group {
+  margin-bottom: 12px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 4px;
+  color: var(--text-secondary);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.95rem;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+}
+
+.btn-secondary {
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  background: var(--border);
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #b71c1c;
+}
+
+.btn-small {
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  width: auto;
+}
+
+/* File Input */
+.file-input-wrapper {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+.file-input-wrapper input[type="file"] {
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+
+.file-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 40px 20px;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.file-label:hover {
+  border-color: var(--primary);
+  background: rgba(46, 125, 50, 0.05);
+}
+
+.file-label .icon {
+  font-size: 2rem;
+}
+
+/* Image Preview */
+.image-preview {
+  margin-top: 12px;
+  text-align: center;
+}
+
+.image-preview img {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+/* OCR Results */
+.ocr-result {
+  margin-top: 12px;
+}
+
+.ocr-result table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.ocr-result th,
+.ocr-result td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.ocr-result th {
+  background: var(--bg);
+  font-weight: 600;
+  color: var(--primary-dark);
+}
+
+.ocr-result .value {
+  font-weight: 500;
+}
+
+/* Loading Spinner */
+.loading {
+  display: none;
+  text-align: center;
+  padding: 20px;
+}
+
+.loading.active {
+  display: block;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 12px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Meal Log */
+.meal-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.meal-item:last-child {
+  border-bottom: none;
+}
+
+.meal-item-info h4 {
+  font-size: 0.95rem;
+  margin-bottom: 2px;
+}
+
+.meal-item-info p {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.meal-item-nutrition {
+  text-align: right;
+  font-size: 0.85rem;
+}
+
+.meal-item-actions {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+/* Totals */
+.totals-card {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+}
+
+.totals-card .card-title {
+  color: white;
+}
+
+.totals-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.total-item {
+  text-align: center;
+  padding: 8px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 6px;
+}
+
+.total-item .value {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.total-item .label {
+  font-size: 0.75rem;
+  opacity: 0.9;
+}
+
+/* Custom Metrics */
+.metric-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.metric-item:last-child {
+  border-bottom: none;
+}
+
+.metric-info h4 {
+  font-size: 0.95rem;
+  margin-bottom: 2px;
+}
+
+.metric-info p {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 30px 20px;
+  color: var(--text-secondary);
+}
+
+.empty-state .icon {
+  font-size: 3rem;
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+
+.empty-state p {
+  font-size: 0.9rem;
+}
+
+/* Alert Messages */
+.alert {
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  font-size: 0.85rem;
+  display: none;
+}
+
+.alert.active {
+  display: block;
+}
+
+.alert-success {
+  background: #e8f5e9;
+  color: var(--primary-dark);
+  border: 1px solid #c8e6c9;
+}
+
+.alert-error {
+  background: #ffebee;
+  color: var(--danger);
+  border: 1px solid #ffcdd2;
+}
+
+.alert-info {
+  background: #e3f2fd;
+  color: var(--info);
+  border: 1px solid #bbdefb;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .app-container {
+    padding: 12px;
+  }
+  
+  .totals-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .nav-tab {
+    font-size: 0.75rem;
+    padding: 8px 4px;
+  }
+}
+
+/* Accessibility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Focus styles for keyboard navigation */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --border: #000000;
+    --text-secondary: #000000;
+  }
+  
+  .card {
+    border: 2px solid var(--text);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+    border-top-color: var(--primary);
+  }
+  
+  .btn,
+  .nav-tab {
+    transition: none;
+  }
+}
