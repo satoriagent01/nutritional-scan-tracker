@@ -1,0 +1,11 @@
+{
+  "name": "nutritional-scan-tracker",
+  "version": "1.0.0",
+  "description": "A free, open-access mobile application for tracking nutritional data from product labels.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  },
+  "keywords": ["nutrition", "scanner", "tracker", "pwa"],
+  "license": "MIT"
+}
