@@ -1,86 +1,146 @@
 /**
- * Meal Planner Module
- * 
- * Handles adding food items by portion size and calculating total intake.
+ * Meal Planner Module - Handles adding food items and calculating totals.
+ * Uses localStorage for persistence.
  */
 
-// In-memory meal log
-let mealLog = [];
+const STORAGE_KEY = 'nutritional-scan-meal-log';
 
 /**
- * Add a food item to the meal log.
- * @param {string} name - The name of the food item.
- * @param {number} portionGrams - The portion size in grams (or ml for liquids).
- * @param {Object} nutritionData - Nutritional data per 100g/ml.
- * @param {Object} customValues - Custom metric values per 100g/ml.
+ * Adds a food item to the current meal log.
+ * @param {string} name - Name of the food item.
+ * @param {number} portionGrams - Portion size in grams (or ml).
+ * @param {Object} nutritionalData - Nutritional data per 100g (from OCR or manual entry).
+ * @param {Object} customValues - Custom metric values for this item.
+ * @returns {Object} FoodItem object with calculated values.
  */
-export function addFoodItem(name, portionGrams, nutritionData, customValues = {}) {
-  const portionFactor = portionGrams / 100;
-
-  const scaledNutrition = {};
-  if (nutritionData) {
-    for (const [key, value] of Object.entries(nutritionData)) {
-      if (typeof value === 'number') {
-        scaledNutrition[key] = Math.round(value * portionFactor * 100) / 100;
-      }
-    }
+export function addFoodItem(name, portionGrams, nutritionalData, customValues) {
+  if (!name || typeof name !== 'string' || name.trim() === '') {
+    throw new Error('Invalid food item name');
+  }
+  if (typeof portionGrams !== 'number' || portionGrams <= 0) {
+    throw new Error('Invalid portion size');
   }
 
-  const scaledCustom = {};
-  for (const [key, value] of Object.entries(customValues)) {
-    if (typeof value === 'number') {
-      scaledCustom[key] = Math.round(value * portionFactor * 100) / 100;
-    }
-  }
+  const factor = portionGrams / 100;
 
-  mealLog.push({
-    name,
+  const item = {
+    id: generateId(),
+    name: name.trim(),
     portionGrams,
-    nutritionData: scaledNutrition,
-    customValues: scaledCustom,
-  });
+    nutritionalData: {
+      energyKj: (nutritionalData.energyKj || 0) * factor,
+      energyKcal: (nutritionalData.energyKcal || 0) * factor,
+      fat: (nutritionalData.fat || 0) * factor,
+      saturates: (nutritionalData.saturates || 0) * factor,
+      carbohydrates: (nutritionalData.carbohydrates || 0) * factor,
+      sugars: (nutritionalData.sugars || 0) * factor,
+      fiber: (nutritionalData.fiber || 0) * factor,
+      protein: (nutritionalData.protein || 0) * factor,
+      salt: (nutritionalData.salt || 0) * factor,
+    },
+    customValues: customValues || {},
+    timestamp: Date.now(),
+  };
+
+  const log = getMealLog();
+  log.push(item);
+  saveMealLog(log);
+
+  return item;
 }
 
 /**
- * Get the current meal log.
- * @returns {Array} The meal log array.
+ * Returns all items in the current meal log.
+ * @returns {Array<Object>}
  */
 export function getMealLog() {
-  return mealLog;
+  try {
+    const data = localStorage.getItem(STORAGE_KEY);
+    return data ? JSON.parse(data) : [];
+  } catch {
+    return [];
+  }
 }
 
 /**
- * Calculate totals from the meal log.
- * @param {Array} log - The meal log to calculate from.
- * @returns {Object} Totals object with all nutritional and custom metrics.
+ * Calculates total nutritional values for a meal log.
+ * @param {Array<Object>} mealLog - Array of FoodItem objects.
+ * @returns {Object} Totals object with all nutritional values and custom metrics.
  */
-export function calculateTotals(log) {
-  const totals = {};
+export function calculateTotals(mealLog) {
+  const totals = {
+    energyKj: 0,
+    energyKcal: 0,
+    fat: 0,
+    saturates: 0,
+    carbohydrates: 0,
+    sugars: 0,
+    fiber: 0,
+    protein: 0,
+    salt: 0,
+  };
 
-  for (const item of log) {
-    for (const [key, value] of Object.entries(item.nutritionData || {})) {
-      if (typeof value === 'number') {
-        totals[key] = (totals[key] || 0) + value;
-      }
-    }
-    for (const [key, value] of Object.entries(item.customValues || {})) {
-      if (typeof value === 'number') {
-        totals[key] = (totals[key] || 0) + value;
+  // Collect custom metric names from all items
+  const customMetricNames = new Set();
+  for (const item of mealLog) {
+    if (item.customValues) {
+      for (const key of Object.keys(item.customValues)) {
+        customMetricNames.add(key);
       }
     }
   }
 
-  // Round all values to 2 decimal places
-  for (const key of Object.keys(totals)) {
-    totals[key] = Math.round(totals[key] * 100) / 100;
+  // Initialize custom metric totals
+  for (const name of customMetricNames) {
+    totals[name] = 0;
+  }
+
+  // Sum up all values
+  for (const item of mealLog) {
+    const nd = item.nutritionalData || {};
+    totals.energyKj += nd.energyKj || 0;
+    totals.energyKcal += nd.energyKcal || 0;
+    totals.fat += nd.fat || 0;
+    totals.saturates += nd.saturates || 0;
+    totals.carbohydrates += nd.carbohydrates || 0;
+    totals.sugars += nd.sugars || 0;
+    totals.fiber += nd.fiber || 0;
+    totals.protein += nd.protein || 0;
+    totals.salt += nd.salt || 0;
+
+    // Add custom values
+    if (item.customValues) {
+      for (const key of Object.keys(item.customValues)) {
+        if (totals[key] === undefined) {
+          totals[key] = 0;
+        }
+        totals[key] += item.customValues[key] || 0;
+      }
+    }
   }
 
   return totals;
 }
 
 /**
- * Clear the meal log.
+ * Clears the current meal log.
  */
 export function clearMealLog() {
-  mealLog = [];
+  saveMealLog([]);
+}
+
+/**
+ * Saves meal log to localStorage.
+ * @param {Array<Object>} log
+ */
+function saveMealLog(log) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(log));
+}
+
+/**
+ * Generates a unique ID for food items.
+ * @returns {string}
+ */
+function generateId() {
+  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 }
