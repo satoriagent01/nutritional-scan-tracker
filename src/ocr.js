@@ -36,9 +36,9 @@ export function parseNutritionalTable(rawText, language) {
     nl: {
       energy: /energie\s*(\d+(?:[.,]\d+)?)\s*kJ\s*(?:\/|\s*\/\s*)\s*(\d+(?:[.,]\d+)?)\s*kcal/i,
       fat: /vetten?\s*(\d+(?:[.,]\d+)?)\s*g/i,
-      saturates: /waarvan\s*verzadigde\s*vetzuren\s*(\d+(?:[.,]\d+)?)\s*g/i,
+      saturates: /(?:waarvan\s*)?verzadigde\s*vetzuren\s*(\d+(?:[.,]\d+)?)\s*g/i,
       carbohydrates: /koolhydraten?\s*(\d+(?:[.,]\d+)?)\s*g/i,
-      sugars: /waarvan\s*suikers?\s*(\d+(?:[.,]\d+)?)\s*g/i,
+      sugars: /(?:waarvan\s*)?suikers?\s*(\d+(?:[.,]\d+)?)\s*g/i,
       fiber: /vezels?\s*(\d+(?:[.,]\d+)?)\s*g/i,
       protein: /eiwitten?\s*(\d+(?:[.,]\d+)?)\s*g/i,
       salt: /zout\s*(\d+(?:[.,]\d+)?)\s*g/i,
